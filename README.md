@@ -126,13 +126,13 @@ def index():
 
 The vulnerability lies in the way the webpage is rendered when the POST request is received. The `f-string` can be abused to retrieve `__builtins__` through Jinja2 introspection.  
 
-```
+```python
 {{ self.__init__.__globals__.__builtins__ }}
 ```
 
 Jinja2 also has a special variable `request`, which refers to the current request being processed and can also be abused to access `__builtins__`
 
-```
+```python
 {{ request.application.__globals__.__builtins__ }}
 ```
 
