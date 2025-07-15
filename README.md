@@ -164,5 +164,5 @@ Read [this article](https://github.com/maurosoria/dirsearch/issues/1073) for mor
 
 ---
 
-## Additional resources
+## Additional Resources
 [very cool cheatsheet](https://shirajuki.js.org/blog/pyjail-cheatsheet)
