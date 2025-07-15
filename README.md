@@ -161,3 +161,8 @@ Once a blacklist is introduced, things won't be as straightforward.
 Luckily, we can use [Pickora](https://github.com/splitline/Pickora) to convert our obfuscated Python code to Pickle bytecode.  
 
 Read [this article](https://github.com/maurosoria/dirsearch/issues/1073) for more info.  
+
+---
+
+## Additional resources
+[very cool cheatsheet](https://shirajuki.js.org/blog/pyjail-cheatsheet)
