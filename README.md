@@ -111,7 +111,7 @@ Without quotes
 
 ### More stuff
 Dynamically accessing attributes
-- `getattr()`: for objects
+- `getattr()` and `.__getattribute__()`: for objects
 - `__getitem__()`: for dictionaries
 
 Assigning variables
