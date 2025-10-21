@@ -91,14 +91,28 @@ Setting a `__builtins__` function to `None` completely removes the global refere
 
 Honestly nothing you can do about it brotato chip ✌🥀, just find another entry point.  
 
+
+### String building techniques
+
+Some pyjails often implement filters to prevent certain strings or even the construction of strings.  
+
+There are a few techniques we can use to bypass such restrictions.  
+
+`chr()` conversions
+- `chr(102)+chr(108)+chr(97)+chr(103)+chr(46)+chr(116)+chr(120)+chr(116)` -> `'flag.txt'`
+
+Hex and Octal encoding
+- `'\x66\x6c\x61\x67\x2e\x74\x78\x74` -> `'flag.txt'`
+- `'\146\154\141\147.txt'` -> `'flag.txt'`
+
+Without quotes
+- if quotes are blacklisted, we can simply grab the required characters from a pre-existing string to build our desired string
+- `().__doc__` and `[].__doc__` are some sources from which we can pool characters
+
 ### More stuff
 Dynamically accessing attributes
 - `getattr()`: for objects
 - `__getitem__()`: for dictionaries
-
-Octal encoding
-- bypass blacklists within your strings!
-- eg: `'\146\154\141\147.txt'` -> `'flag.txt'`
 
 Assigning variables
 - the walrus operator treats an assignment as an expression
@@ -164,5 +178,5 @@ Read [this article](https://github.com/maurosoria/dirsearch/issues/1073) for mor
 
 ---
 
-## Additional Resources
+## Additional resources
 [very cool cheatsheet](https://shirajuki.js.org/blog/pyjail-cheatsheet)
